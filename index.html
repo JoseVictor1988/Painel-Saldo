@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta de Saldo - Sistema de Gestão de Resíduos</title>
+
+  <!-- Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Estilos Personalizados -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+  <!-- Cabeçalho Fixo e Moderno -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-slate-200 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i class="fas fa-recycle text-2xl text-primary" style="color: var(--color-primary)"></i>
+        <h1 class="text-lg font-bold text-slate-800 hidden sm:block">Gestão de Resíduos</h1>
+      </div>
+      <button id="btnSair" class="ml-auto orange-button text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center hidden">
+        <i class="fas fa-sign-out-alt mr-2"></i> Sair
+      </button>
+    </div>
+  </header>
+
+  <main class="mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full max-w-7xl">
+
+    <!-- Formulário de Login -->
+    <div id="formularioLogin" class="max-w-md mx-auto bg-white mt-10 p-8 rounded-xl shadow-lg border border-slate-200">
+      <div class="text-center mb-8">
+        <i class="fas fa-user-circle text-5xl mb-4" style="color: var(--color-primary)"></i>
+        <h2 class="text-2xl font-bold text-slate-900">Acesse sua Conta</h2>
+        <p class="text-slate-500 mt-1">Consulte seu saldo e histórico de descartes.</p>
+      </div>
+      
+      <!-- CORRIGIDO: Adicionado o elemento <form> para acessibilidade e melhor manuseio de eventos -->
+      <form id="loginForm">
+        <div class="space-y-6">
+          <div>
+            <label class="block font-medium mb-1 text-slate-700" for="usuario">Usuário</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-user"></i></span>
+              <input id="usuario" type="text" placeholder="Digite seu usuário"
+                class="w-full border border-slate-300 pl-10 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 focus:border-primary" style="--ring-color: var(--color-primary)"/>
+            </div>
+          </div>
+          <div>
+            <label class="block font-medium mb-1 text-slate-700" for="senha">Senha</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-lock"></i></span>
+              <input id="senha" type="password" placeholder="Sua senha"
+                class="w-full border border-slate-300 pl-10 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 focus:border-primary" style="--ring-color: var(--color-primary)"/>
+            </div>
+          </div>
+        </div>
+
+        <button id="btnConsultar" type="submit" class="w-full orange-button text-white py-3 mt-8 rounded-lg font-semibold text-base">
+          <i class="fas fa-search mr-2"></i> Consultar
+        </button>
+      </form>
+
+    </div>
+
+    <!-- Resultado da Consulta -->
+    <div id="resultadoConsulta" class="w-full mx-auto mt-8 hidden">
+      <!-- Cabeçalho dos Resultados -->
+      <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center"><i class="fas fa-file-invoice-dollar mr-3 text-primary" style="color: var(--color-primary)"></i>Painel do Cliente</h2>
+            <div class="mt-3 text-sm text-slate-500 space-y-1">
+              <p id="clienteNome">Cliente: -</p>
+              <p id="clienteUsuario">Usuário: -</p>
+              <p id="dataGeracao" class="text-xs">• Gerado em -</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+             <button id="btnAcessarConsultaDescarte" class="w-full sm:w-auto text-sm text-center font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
+                <i class="fas fa-box-open mr-2"></i> Histórico
+            </button>
+            <button id="btnNovaConsulta" class="w-full sm:w-auto orange-button text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center justify-center">
+              <i class="fas fa-sync-alt mr-2"></i> Atualizar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Seção de Saldos e Detalhes -->
+      <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Coluna de Saldos e Ações -->
+        <div class="lg:col-span-1 space-y-8">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center"><i class="fas fa-wallet mr-3 text-primary" style="color: var(--color-primary)"></i>Saldos Atuais</h2>
+            
+            <!-- 
+              MODIFICADO: Container para os Cards de Saldo Dinâmicos.
+              Os cards de "Caçamba" e "Tonelada" foram removidos daqui.
+              Eles agora serão gerados via JavaScript (no arquivo main.js) e inseridos aqui dentro.
+              Isso permite adicionar novos tipos de resíduos no futuro apenas modificando o JavaScript.
+              O layout com `grid` se ajusta automaticamente a mais cards.
+            -->
+            <div id="saldosContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+                <!-- Os cards de saldo serão inseridos aqui pelo JavaScript -->
+            </div>
+
+             <!-- Botão de Solicitar Saldo -->
+            <div class="pt-6 border-t border-slate-200">
+                <button id="btnSolicitarSaldo" class="w-full green-button text-white font-semibold px-6 py-3 rounded-lg">
+                    <i class="fas fa-plus-circle mr-2"></i> Solicitar Novo Boleto
+                </button>
+            </div>
+        </div>
+
+        <!-- Coluna de Detalhamento -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md border border-slate-200">
+          <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center"><i class="fas fa-list-alt mr-3 text-primary" style="color: var(--color-primary)"></i>Detalhamento por Boleto</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full w-full text-sm">
+              <thead class="border-b border-slate-200">
+                <tr>
+                  <th class="text-left px-4 py-3 font-semibold text-slate-500">Nº Boleto</th>
+                  <th class="text-left px-4 py-3 font-semibold text-slate-500">Status</th>
+                  <th class="text-left px-4 py-3 font-semibold text-slate-500">Emissão</th>
+                  <th class="text-left px-4 py-3 font-semibold text-slate-500">Saldo</th>
+                  <th class="text-left px-4 py-3 font-semibold text-slate-500">Tipo</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaResultados"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal de Solicitação de Saldo -->
+    <div id="modalSolicitacao" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+      <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
+        <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+          <h3 class="text-xl font-bold header-text-gradient"><i class="fas fa-file-invoice mr-2"></i>Solicitação de Saldo</h3>
+          <button id="btnFecharModal" class="text-slate-400 hover:text-slate-800"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <form id="formSolicitacao" class="space-y-4">
+          <!-- Campos do formulário com estilo atualizado -->
+           <div>
+            <label class="block font-medium mb-1 text-sm text-slate-600" for="empresa">Nome da Empresa</label>
+            <input id="empresa" type="text" class="w-full border border-slate-200 bg-slate-100 pl-4 px-4 py-2 rounded-lg text-sm text-slate-500" readonly />
+           </div>
+           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <div>
+               <label class="block font-medium mb-1 text-sm text-slate-600" for="documento">CNPJ/CPF</label>
+               <input id="documento" type="text" placeholder="Seu documento" class="w-full border border-slate-300 pl-4 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+             </div>
+             <div>
+               <label class="block font-medium mb-1 text-sm text-slate-600" for="whatsapp">Whatsapp</label>
+               <input id="whatsapp" type="text" placeholder="Seu número com DDD" class="w-full border border-slate-300 pl-4 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+             </div>
+           </div>
+            <div>
+               <label class="block font-medium mb-1 text-sm text-slate-600" for="email">E-mail</label>
+               <input id="email" type="email" placeholder="Seu e-mail de contato" class="w-full border border-slate-300 pl-4 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+             </div>
+           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-medium mb-1 text-sm text-slate-600" for="tipoSaldo">Tipo</label>
+                <!-- MODIFICADO: O conteúdo deste <select> será populado dinamicamente pelo JavaScript -->
+                <select id="tipoSaldo" class="w-full border border-slate-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-white text-sm">
+                  <option value="">Selecione</option>
+                  <!-- As opções serão inseridas aqui pelo JavaScript -->
+                </select>
+            </div>
+            <div>
+                <label class="block font-medium mb-1 text-sm text-slate-600" for="quantidade">Quantidade</label>
+                <input id="quantidade" type="number" min="1" placeholder="Ex: 10" class="w-full border border-slate-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+            </div>
+           </div>
+           <div>
+              <label class="block font-medium mb-1 text-sm text-slate-600" for="valor">Valor Total</label>
+              <input id="valor" type="text" readonly class="w-full border border-slate-200 bg-slate-100 px-4 py-2 rounded-lg text-sm font-bold text-slate-600" />
+           </div>
+           <div>
+              <label class="block font-medium mb-1 text-sm text-slate-600" for="observacao">Observação (Opcional)</label>
+              <textarea id="observacao" placeholder="Alguma informação adicional?" class="w-full border border-slate-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[80px] text-sm"></textarea>
+           </div>
+          <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-slate-200">
+            <button type="button" id="btnCancelarSolicitacao" class="px-6 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors text-sm font-semibold">Cancelar</button>
+            <button type="submit" id="btnEnviarSolicitacao" class="green-button text-white px-6 py-2 rounded-lg text-sm">
+              <i class="fab fa-whatsapp mr-2"></i> Enviar via WhatsApp
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Resultado da Consulta de Descarte -->
+    <div id="resultadoDescarte" class="max-w-5xl w-full mx-auto mt-8 hidden">
+      <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                  <h2 class="text-2xl font-bold text-slate-800 flex items-center"><i class="fas fa-history mr-3 text-primary" style="color: var(--color-primary)"></i>Histórico de Descartes</h2>
+                  <div class="mt-3 text-sm text-slate-500 space-y-1">
+                      <p id="clienteDescarteNome">Cliente: -</p>
+                      <p id="boletoNumeroDescarte">Nº do Boleto: -</p>
+                      <p id="dataGeracaoDescarte" class="text-xs">• Gerado em -</p>
+                  </div>
+              </div>
+              <button id="btnNovaConsultaDescarte" class="orange-button text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center justify-center">
+                  <i class="fas fa-arrow-left mr-2"></i> Voltar
+              </button>
+          </div>
+          <div class="mt-6 border-t border-slate-200 pt-6">
+              <h3 class="text-xl font-bold text-slate-800 mb-6">Lançamentos</h3>
+              <div class="overflow-x-auto">
+                  <table class="min-w-full w-full text-sm">
+                      <thead class="border-b border-slate-200">
+                          <tr>
+                              <th class="text-left px-4 py-3 font-semibold text-slate-500">Data</th>
+                              <th class="text-left px-4 py-3 font-semibold text-slate-500">Horário</th>
+                              <th class="text-left px-4 py-3 font-semibold text-slate-500">Placa / Prefixo</th>
+                              <th class="text-left px-4 py-3 font-semibold text-slate-500">Nº MTR</th>
+                              <th class="text-left px-4 py-3 font-semibold text-slate-500">Descarte</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tabelaDescartes"></tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+    <!-- Formulário de Consulta de Boleto -->
+    <div id="formularioConsultaBoleto" class="max-w-md mx-auto bg-white mt-10 p-8 rounded-xl shadow-lg border border-slate-200 hidden">
+        <div class="text-center mb-8">
+            <i class="fas fa-receipt text-5xl mb-4 text-primary" style="color: var(--color-primary)"></i>
+            <h2 class="text-2xl font-bold text-slate-900">Histórico por Boleto</h2>
+            <p class="text-slate-500 mt-1">Digite o número do boleto para ver os descartes.</p>
+        </div>
+        <div class="space-y-6">
+            <div>
+                <label class="block font-medium mb-1 text-slate-700" for="inputBoletoConsulta">Número do Boleto</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-hashtag"></i></span>
+                    <input id="inputBoletoConsulta" type="text" placeholder="Ex: 43301" class="w-full border border-slate-300 pl-10 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 focus:border-primary" />
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 mt-8">
+            <button id="btnVoltarConsultaBoleto" class="w-full text-center font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-3 rounded-lg transition-colors">Voltar ao Painel</button>
+            <button id="btnConsultarBoleto" class="w-full orange-button text-white py-3 rounded-lg font-semibold text-base"><i class="fas fa-search mr-2"></i> Consultar Boleto</button>
+        </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="bg-slate-800 text-slate-400 py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+      <p>© 2025 Sistema de Gestão de Resíduos. Todos os direitos reservados.</p>
+      <p class="mt-1 opacity-70">Desenvolvido por José Victor De Oliveira.</p>
+    </div>
+  </footer>
+
+  <!-- Tela de carregamento -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="text-center">
+      <div class="loading-spinner mb-4"></div>
+      <p class="text-slate-600 font-semibold">Carregando dados...</p>
+    </div>
+  </div>
+
+  <script src="alerta-debito.js"></script>
+  <script src="alerta-mensagem.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>

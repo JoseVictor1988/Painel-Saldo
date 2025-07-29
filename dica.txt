@@ -1,0 +1,25 @@
+Como Adicionar um Novo Resíduo no Futuro:
+Para adicionar um novo tipo de material (por exemplo, "Madeira"), o único arquivo que você precisará editar é o main.js.
+Abra o arquivo main.js.
+Vá até o topo do arquivo, onde está a seção CONFIGURAÇÃO CENTRAL DE RESÍDUOS.
+Adicione um novo objeto dentro de configuracaoResiduos, seguindo o exemplo que deixei comentado no código:
+Generated javascript
+//...
+'RSU-TONELADA': {
+    id: 'RSU-TONELADA',
+    nome: 'Tonelada',
+    icone: 'fas fa-weight-hanging',
+    cor: 'text-orange-500',
+    unidade: 'kg',
+    preco: 102.91
+},
+// Adicione sua nova entrada aqui
+'MADEIRA-M3': {
+    id: 'MADEIRA-M3',       // Um ID único para o sistema
+    nome: 'Madeira',         // Nome que aparece na tela
+    icone: 'fas fa-tree',    // Ícone do FontAwesome
+    cor: 'text-yellow-600',  // Cor do ícone (TailwindCSS)
+    unidade: 'm³',           // Unidade de medida
+    preco: 150.00            // Preço por unidade
+}
+//...
