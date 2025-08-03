@@ -30,15 +30,17 @@ const configuracaoResiduos = {
     icone: 'fas fa-dumpster',
     cor: 'text-green-500',
     unidade: 'un',
-    preco: 99.00
+    preco: 99.00,
+    borda: 'border-l-4 border-l-green-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
   'RSU-TONELADA': {
     id: 'RSU-TONELADA',
     nome: 'Tonelada',
     icone: 'fas fa-weight-hanging',
     cor: 'text-orange-500',
-    unidade: 'kg',
-    preco: 102.91
+    unidade: 'Ton',
+    preco: 102.91,
+    borda: 'border-l-4 border-l-orange-500'  // 'border-l-4 border-l-orange-600' <- Boda lateral
   }
 
 
@@ -411,16 +413,17 @@ function exibirSaldos(saldos) {
     const residuo = configuracaoResiduos[idResiduo];
     const saldo = saldos[idResiduo] || 0; // Pega o saldo correspondente ou assume 0
 
+
     const cardHTML = `
-      <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 transition-all hover:shadow-lg hover:-translate-y-1">
-          <div class="flex items-center justify-between text-slate-500 font-semibold">
-              <span>${residuo.nome}</span>
-              <i class="${residuo.icone} text-xl ${residuo.cor}"></i>
-          </div>
-          <p class="text-4xl font-bold text-slate-800 mt-2">${formatarValor(saldo)}</p>
-      </div>
-    `;
-    elements.saldosContainer.innerHTML += cardHTML;
+   <div class="bg-white p-6 rounded-xl shadow-md border border-slate-300 transition-all hover:shadow-lg hover:-translate-y-1 ${residuo.borda ?? ''}">
+    <div class="flex items-center justify-between text-slate-500 font-semibold">
+      <span>${residuo.nome}</span>
+      <i class="${residuo.icone} text-xl ${residuo.cor}"></i>
+    </div>
+    <p class="text-4xl font-bold text-slate-800 mt-2">${formatarValor(saldo)}</p>
+  </div>
+`;
+elements.saldosContainer.innerHTML += cardHTML;
   }
 }
 
