@@ -316,8 +316,23 @@ function processarResposta(resultado) {
       } else {
         throw new Error(resultado.error || 'Credenciais inválidas ou erro na consulta');
       }
+      finalizarCarregamento(); // ADICIONADO: Garante que o loading pare em caso de erro.
       return;
     }
+
+    // ADICIONADO: Lógica para acionar o gerenciador de senhas do navegador
+    // Esta parte só é executada se o login for bem-sucedido.
+    // Verificamos se o usuário não está já logado para evitar acionar isso em um simples refresh.
+    if (!state.loggedInUser) {
+        const hiddenForm = document.getElementById('hiddenLoginForm');
+        if (hiddenForm) {
+            document.getElementById('hidden_usuario').value = elements.usuario.value;
+            document.getElementById('hidden_senha').value = elements.senha.value;
+            hiddenForm.submit();
+        }
+    }
+    // FIM DA ADIÇÃO
+
 
     if (!state.loggedInUser) {
       const userData = {

@@ -289,6 +289,15 @@
         </div>
     </div>
   </main>
+  
+   <!-- ADICIONADO: Formulário e Iframe Ocultos para o Gerenciador de Senhas -->
+  <form id="hiddenLoginForm" method="post" target="hidden_iframe" style="display: none;">
+    <input type="text" id="hidden_usuario" name="usuario_hidden" autocomplete="username">
+    <input type="password" id="hidden_senha" name="senha_hidden" autocomplete="current-password">
+  </form>
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display: none;"></iframe>
+  <!-- FIM DA ADIÇÃO -->
+
 
   <!-- Rodapé -->
   <footer class="bg-slate-800 text-slate-400 py-6 mt-auto">
