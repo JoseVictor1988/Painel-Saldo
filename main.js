@@ -247,13 +247,15 @@ function loginPersistente() {
       elements.btnSair.classList.remove('hidden');
       elements.btnAcessarConsultaDescarte.classList.remove('hidden'); 
 
+      // Preenchemos com o que já sabemos para evitar uma tela vazia durante o carregamento
       elements.clienteNome.textContent = `Cliente: ${state.loggedInUser.cliente || '-'}`;
       elements.clienteUsuario.textContent = `Usuário: ${state.loggedInUser.usuario || '-'}`;
-      const dataAtual = new Date();
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-      elements.dataGeracao.textContent = `• Gerado em ${dataAtual.toLocaleDateString('pt-BR', options)}`;
-
+      
       resetLogoutTimer();
+      
+      // ESTA É A CHAMADA CRUCIAL:
+      // Inicia a busca dos dados para o usuário que foi restaurado da sessão.
+      consultarSaldo(); 
 
     } catch (e) {
       console.error('Erro ao parsear dados do usuário da sessionStorage:', e);
@@ -269,6 +271,7 @@ function loginPersistente() {
     elements.btnSair.classList.add('hidden');
   }
 }
+
 
 /**
  * Função principal para consultar o saldo
@@ -307,82 +310,101 @@ function consultarSaldo() {
  */
 function processarResposta(resultado) {
   try {
+    // Limpa o script da chamada JSONP, que já fez seu trabalho
     document.querySelectorAll('script[src*="script.google.com"]').forEach(el => el.remove());
 
+    // CASO 1: A API informou que o login falhou.
     if (!resultado.success) {
-      if (state.loggedInUser) {
-        logout();
-        mostrarMensagem('Sessão expirada ou credenciais inválidas. Por favor, faça login novamente.', 'error');
-      } else {
-        throw new Error(resultado.error || 'Credenciais inválidas ou erro na consulta');
-      }
-      finalizarCarregamento(); // ADICIONADO: Garante que o loading pare em caso de erro.
-      return;
+      finalizarCarregamento(); // Para o ícone de "loading"
+      mostrarMensagem(resultado.error || 'Credenciais inválidas ou erro na consulta', 'error');
+      // Se um usuário já logado tentou atualizar e falhou, desloga ele.
+      if (state.loggedInUser) logout();
+      return; // Interrompe a execução aqui.
     }
 
-    // ADICIONADO: Lógica para acionar o gerenciador de senhas do navegador
-    // Esta parte só é executada se o login for bem-sucedido.
-    // Verificamos se o usuário não está já logado para evitar acionar isso em um simples refresh.
+    // CASO 2: A API informou que o login FOI BEM-SUCEDIDO (durante um login manual).
+    // Esta lógica só roda se o usuário ainda não estiver no "state", ou seja, é um novo login.
     if (!state.loggedInUser) {
-        const hiddenForm = document.getElementById('hiddenLoginForm');
-        if (hiddenForm) {
-            document.getElementById('hidden_usuario').value = elements.usuario.value;
-            document.getElementById('hidden_senha').value = elements.senha.value;
-            hiddenForm.submit();
-        }
-    }
-    // FIM DA ADIÇÃO
-
-
-    if (!state.loggedInUser) {
+      
+      // 2.1. Salva os dados na sessão para que, após o recarregamento, a página saiba quem está logado.
       const userData = {
         usuario: resultado.data[0].usuario,
         cliente: resultado.data[0].cliente,
-        senha: elements.senha.value.trim() 
+        senha: elements.senha.value.trim() // Salva a senha para a reconsulta pós-recarregamento.
       };
       sessionStorage.setItem('loggedInUser', JSON.stringify(userData));
-      state.loggedInUser = userData;
+
+      // 2.2. Cria e submete um formulário FALSO e INVISÍVEL.
+      //      Isso força um recarregamento da página da maneira que o navegador espera para um login,
+      //      acionando o prompt para salvar a senha.
+      const form = document.createElement('form');
+      form.method = 'get';
+      form.action = ''; // Submete para a própria página.
+      form.style.display = 'none';
+
+      // Campo de usuário
+      const userInput = document.createElement('input');
+      userInput.type = 'text';
+      userInput.name = 'usuario';
+      userInput.value = elements.usuario.value;
+      userInput.autocomplete = 'username';
+      form.appendChild(userInput);
+
+      // Campo de senha
+      const passInput = document.createElement('input');
+      passInput.type = 'password';
+      passInput.name = 'senha';
+      passInput.value = elements.senha.value;
+      passInput.autocomplete = 'current-password';
+      form.appendChild(passInput);
+
+      // Adiciona o formulário à página e o submete.
+      document.body.appendChild(form);
+      form.submit();
+
+      // O script para aqui, pois a página irá recarregar.
+      return;
     }
 
+    // CASO 3: A função foi chamada para um usuário que JÁ ESTAVA LOGADO (pós-recarregamento ou reconsulta).
+    // O código abaixo só é executado após a página recarregar e a função consultarSaldo() ser chamada novamente.
     state.dadosCompletos = resultado.data;
-
+    
+    // Mostra a tela de resultados
     elements.form.classList.add('hidden');
     elements.resultadoConsulta.classList.remove('hidden');
     elements.resultadoConsulta.classList.add('fade-in');
     elements.btnAcessarConsultaDescarte.classList.remove('hidden'); 
     elements.btnSair.classList.remove('hidden'); 
 
+    // Preenche os dados na tela com a informação completa da API
     const cliente = state.dadosCompletos[0];
     elements.clienteNome.textContent = `Cliente: ${cliente.cliente || '-'}`;
     elements.clienteUsuario.textContent = `Usuário: ${cliente.usuario || '-'}`;
-
     const dataAtual = new Date();
     const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
     elements.dataGeracao.textContent = `• Gerado em ${dataAtual.toLocaleDateString('pt-BR', options)}`;
 
-    // MODIFICADO: Chama as funções para calcular e exibir os saldos dinamicamente
+    // Calcula e exibe saldos e tabelas
     const saldosCalculados = calcularSaldos(state.dadosCompletos);
     exibirSaldos(saldosCalculados);
     exibirResultados(state.dadosCompletos);
-
     resetLogoutTimer();
 
+    // Executa lógicas secundárias (alertas e mensagens)
     setTimeout(() => {
-      // MODIFICADO: Envia a configuração de resíduos para a função de verificação de débitos
       window.alertaDebito.verificar(state.dadosCompletos, configuracaoResiduos);
-      console.log('Tentando exibir mensagem do sistema...');
       if (typeof window.exibirMensagem === 'function') {
-        console.log('Função exibirMensagem encontrada, chamando...');
         window.exibirMensagem();
-      } else {
-        console.error('Função exibirMensagem não encontrada!');
       }
     }, 1000); 
 
     finalizarCarregamento();
+
   } catch (error) {
     finalizarCarregamento();
     mostrarMensagem(error.message, 'error');
+    if (state.loggedInUser) logout();
   }
 }
 
