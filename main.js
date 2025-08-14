@@ -154,6 +154,12 @@ function inicializarEventos() {
   document.body.addEventListener('keypress', resetLogoutTimer);
   document.body.addEventListener('click', resetLogoutTimer);
 
+  // Evento para toggle de senha
+  const toggleSenha = document.getElementById('toggleSenha');
+  if (toggleSenha) {
+    toggleSenha.addEventListener('click', toggleVisibilidadeSenha);
+  }
+
   loginPersistente();
 }
 
@@ -986,4 +992,37 @@ function retornarAoSaldo() {
       `;
   }
   resetLogoutTimer();
+}
+
+/**
+ * Função para alternar a visibilidade da senha
+ * Mostra/oculta a senha e anima o ícone do olho
+ */
+function toggleVisibilidadeSenha() {
+  const senhaInput = document.getElementById('senha');
+  const toggleIcon = document.querySelector('.toggle-senha-icon');
+  
+  if (senhaInput.type === 'password') {
+    // Mostrar senha
+    senhaInput.type = 'text';
+    toggleIcon.classList.remove('fa-eye-slash');
+    toggleIcon.classList.add('fa-eye');
+    toggleIcon.classList.add('showing');
+    
+    // Remover a classe de animação após a animação terminar
+    setTimeout(() => {
+      toggleIcon.classList.remove('showing');
+    }, 300);
+  } else {
+    // Ocultar senha
+    senhaInput.type = 'password';
+    toggleIcon.classList.remove('fa-eye');
+    toggleIcon.classList.add('fa-eye-slash');
+    toggleIcon.classList.add('showing');
+    
+    // Remover a classe de animação após a animação terminar
+    setTimeout(() => {
+      toggleIcon.classList.remove('showing');
+    }, 300);
+  }
 }

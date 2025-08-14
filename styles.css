@@ -117,6 +117,24 @@ input[readonly] {
   }
 }
 
+/* -- Toggle de Senha -- */
+.toggle-senha-icon {
+  transition: all 0.3s ease;
+}
+
+.toggle-senha-icon.showing {
+  transform: scale(1.1);
+  color: var(--color-primary);
+}
+
+#toggleSenha:hover .toggle-senha-icon {
+  transform: scale(1.05);
+}
+
+#toggleSenha:active .toggle-senha-icon {
+  transform: scale(0.95);
+}
+
 .loading-spinner {
   width: 40px;
   height: 40px;
