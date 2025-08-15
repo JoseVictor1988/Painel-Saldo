@@ -24,23 +24,75 @@
 //  - preco: O valor unitário para o cálculo na solicitação de boleto.
 // ===================================================================================
 const configuracaoResiduos = {
-  'RCC-CAÇAMBA': {
-    id: 'RCC-CAÇAMBA',
+  'CAÇAMBA': {
+    id: 'CAÇAMBA',
     nome: 'Caçamba',
     icone: 'fas fa-dumpster',
-    cor: 'text-green-500',
+    cor: 'text-black-600',
     unidade: 'un',
     preco: 99.00,
-    borda: 'border-l-4 border-l-green-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
+    borda: 'border-l-4 border-l-black-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
-  'RSU-TONELADA': {
-    id: 'RSU-TONELADA',
+
+  'TONELADA': {
+    id: 'TONELADA',
     nome: 'Tonelada',
-    icone: 'fas fa-weight-hanging',
-    cor: 'text-orange-500',
+    icone: 'fas fa-solid fa-trash',
+    cor: 'text-black-600',
+    unidade: 'un',
+    preco: 99.00,
+    borda: 'border-l-4 border-l-black-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
+  },
+
+  'RCC-Limpo': {
+    id: 'RCC-Limpo',
+    nome: 'RCC-Limpo',
+    icone: 'fas fa-dumpster',
+    cor: 'text-orange-600',
+    unidade: 'un',
+    preco: 99.00,
+    borda: 'border-l-4 border-l-orange-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
+  },
+
+  'RCC-Misto': {
+    id: 'RCC-Misto',
+    nome: 'RCC-Misto',
+    icone: 'fas fa-dumpster',
+    cor: 'text-yellow-500',
+    unidade: 'un',
+    preco: 200.00,
+    borda: 'border-l-4 border-l-yellow-500'  // 'border-l-4 border-l-green-600' <- Boda lateral
+  },
+
+'RCC-Sujo': {
+    id: 'RCC-Sujo',
+    nome: 'RCC-Sujo',
+    icone: 'fas fa-dumpster',
+    cor: 'text-violet-700',
+    unidade: 'un',
+    preco: 300.00,
+    borda: 'border-l-4 border-l-violet-700'  // 'border-l-4 border-l-green-600' <- Boda lateral
+  },
+
+
+  'RSU-Lixo Comum': {
+    id: 'RSU-Lixo Comum',
+    nome: 'RSU-Lixo Comum',
+    icone: 'fas fa-solid fa-trash',
+    cor: 'text-blue-700',
     unidade: 'Ton',
-    preco: 102.91,
-    borda: 'border-l-4 border-l-orange-500'  // 'border-l-4 border-l-orange-600' <- Boda lateral
+    preco: 120.00,
+    borda: 'border-l-4 border-l-blue-700'  // 'border-l-4 border-l-orange-600' <- Boda lateral
+  },
+
+  'Massa Verde': {
+    id: 'Massa Verde',
+    nome: 'Massa Verde',
+    icone: 'fas fa-solid fa-tree',
+    cor: 'text-green-700',
+    unidade: 'Ton',
+    preco: 120.00,
+    borda: 'border-l-4 border-l-green-700'  // 'border-l-4 border-l-orange-600' <- Boda lateral
   }
 
 
@@ -459,11 +511,11 @@ function exibirSaldos(saldos) {
 
     const cardHTML = `
    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-300 transition-all hover:shadow-lg hover:-translate-y-1 ${residuo.borda ?? ''}">
-    <div class="flex items-center justify-between text-slate-500 font-semibold">
-      <span>${residuo.nome}</span>
+    <div class="flex items-center justify-between text-slate-800 font-semibold -mt-3">
+      <span class="-mt-2">${residuo.nome}</span>
       <i class="${residuo.icone} text-xl ${residuo.cor}"></i>
     </div>
-    <p class="text-4xl font-bold text-slate-800 mt-2">${formatarValor(saldo)}</p>
+    <p class="text-2xl font-bold text-slate-700 mt-2">${formatarValor(saldo)}</p>
   </div>
 `;
 elements.saldosContainer.innerHTML += cardHTML;
