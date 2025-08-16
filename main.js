@@ -30,7 +30,7 @@ const configuracaoResiduos = {
     icone: 'fas fa-dumpster',
     cor: 'text-gray-900',
     unidade: 'un',
-    preco: 99.00,
+    preco: 'Indisponível',
     borda: 'border-l-4 border-l-gray-900'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
@@ -40,13 +40,13 @@ const configuracaoResiduos = {
     icone: 'fas fa-solid fa-trash',
     cor: 'text-gray-900',
     unidade: 'un',
-    preco: 99.00,
+    preco: 'Indisponível',
     borda: 'border-l-4 border-l-gray-900'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
   'RCC-Limpo': {
-    id: 'RCC-Limpo',
-    nome: 'RCC-Limpo',
+    id: 'RCC - Limpo',
+    nome: 'RCC - Limpo',
     icone: 'fas fa-dumpster',
     cor: 'text-orange-600',
     unidade: 'un',
@@ -54,9 +54,9 @@ const configuracaoResiduos = {
     borda: 'border-l-4 border-l-orange-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
-  'RCC-Misto': {
-    id: 'RCC-Misto',
-    nome: 'RCC-Misto',
+  'RCC - Misto': {
+    id: 'RCC  Misto',
+    nome: 'RCC - Misto',
     icone: 'fas fa-dumpster',
     cor: 'text-pink-700',
     unidade: 'un',
@@ -64,9 +64,9 @@ const configuracaoResiduos = {
     borda: 'border-l-4 border-l-pink-700'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
-'RCC-Sujo': {
-    id: 'RCC-Sujo',
-    nome: 'RCC-Sujo',
+  'RCC - Sujo': {
+    id: 'RCC - Sujo',
+    nome: 'RCC - Sujo',
     icone: 'fas fa-dumpster',
     cor: 'text-violet-700',
     unidade: 'un',
@@ -75,9 +75,9 @@ const configuracaoResiduos = {
   },
 
 
-  'RSU-Lixo Comum': {
-    id: 'RSU-Lixo Comum',
-    nome: 'RSU-Lixo Comum',
+  'RSU - Lixo Comum': {
+    id: 'RSU - Lixo Comum',
+    nome: 'RSU - Lixo Comum',
     icone: 'fas fa-solid fa-trash',
     cor: 'text-blue-700',
     unidade: 'Ton',
@@ -513,15 +513,15 @@ const cardHTML = `
    <div class="relative bg-white p-6 rounded-xl shadow-md border border-slate-300 transition-all hover:shadow-lg hover:-translate-y-1 ${residuo.borda ?? ''}">
     
     <!-- Nome -->
-    <div class="text-slate-800 font-semibold -mt-3">
+    <div class="text-slate-900 font-semibold -mt-3">
       <span class="-mt-2">${residuo.nome}</span>
     </div>
     
     <!-- Valor -->
-    <p class="text-2xl font-bold text-slate-700 mt-2">${formatarValor(saldo)}</p>
+    <p class="text-2xl font-bold text-slate-800 mt-2">${formatarValor(saldo)}</p>
     
     <!-- Ícone canto inferior direito -->
-    <i class="${residuo.icone} text-3xl ${residuo.cor} absolute bottom-2 right-2 opacity-40"></i>
+    <i class="${residuo.icone} text-3xl ${residuo.cor} absolute bottom-2 right-2 opacity-80"></i>
   </div>
 `;
 elements.saldosContainer.innerHTML += cardHTML;
@@ -544,7 +544,13 @@ function exibirResultados(dados) {
     return;
   }
 
-  const dadosOrdenados = [...dados].sort((a, b) => {
+  // Filtra os itens com saldo maior que zero
+  const dadosFiltrados = dados.filter(item => {
+    const saldo = parseFloat(String(item.saldo).replace(',', '.'));
+    return !isNaN(saldo) && saldo > 0;
+  });
+
+  const dadosOrdenados = [...dadosFiltrados].sort((a, b) => {
     const dataA = converterParaData(a.dataEmissao);
     const dataB = converterParaData(b.dataEmissao);
     return dataB - dataA;
