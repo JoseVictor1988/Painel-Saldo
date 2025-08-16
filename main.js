@@ -28,20 +28,20 @@ const configuracaoResiduos = {
     id: 'CAÇAMBA',
     nome: 'Caçamba',
     icone: 'fas fa-dumpster',
-    cor: 'text-black-600',
+    cor: 'text-gray-900',
     unidade: 'un',
     preco: 99.00,
-    borda: 'border-l-4 border-l-black-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
+    borda: 'border-l-4 border-l-gray-900'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
   'TONELADA': {
     id: 'TONELADA',
     nome: 'Tonelada',
     icone: 'fas fa-solid fa-trash',
-    cor: 'text-black-600',
+    cor: 'text-gray-900',
     unidade: 'un',
     preco: 99.00,
-    borda: 'border-l-4 border-l-black-600'  // 'border-l-4 border-l-green-600' <- Boda lateral
+    borda: 'border-l-4 border-l-gray-900'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
   'RCC-Limpo': {
@@ -58,10 +58,10 @@ const configuracaoResiduos = {
     id: 'RCC-Misto',
     nome: 'RCC-Misto',
     icone: 'fas fa-dumpster',
-    cor: 'text-yellow-500',
+    cor: 'text-pink-700',
     unidade: 'un',
     preco: 200.00,
-    borda: 'border-l-4 border-l-yellow-500'  // 'border-l-4 border-l-green-600' <- Boda lateral
+    borda: 'border-l-4 border-l-pink-700'  // 'border-l-4 border-l-green-600' <- Boda lateral
   },
 
 'RCC-Sujo': {
@@ -509,13 +509,19 @@ function exibirSaldos(saldos) {
     const saldo = saldos[idResiduo] || 0; // Pega o saldo correspondente ou assume 0
 
 
-    const cardHTML = `
-   <div class="bg-white p-6 rounded-xl shadow-md border border-slate-300 transition-all hover:shadow-lg hover:-translate-y-1 ${residuo.borda ?? ''}">
-    <div class="flex items-center justify-between text-slate-800 font-semibold -mt-3">
+const cardHTML = `
+   <div class="relative bg-white p-6 rounded-xl shadow-md border border-slate-300 transition-all hover:shadow-lg hover:-translate-y-1 ${residuo.borda ?? ''}">
+    
+    <!-- Nome -->
+    <div class="text-slate-800 font-semibold -mt-3">
       <span class="-mt-2">${residuo.nome}</span>
-      <i class="${residuo.icone} text-xl ${residuo.cor}"></i>
     </div>
+    
+    <!-- Valor -->
     <p class="text-2xl font-bold text-slate-700 mt-2">${formatarValor(saldo)}</p>
+    
+    <!-- Ícone canto inferior direito -->
+    <i class="${residuo.icone} text-3xl ${residuo.cor} absolute bottom-2 right-2 opacity-40"></i>
   </div>
 `;
 elements.saldosContainer.innerHTML += cardHTML;
