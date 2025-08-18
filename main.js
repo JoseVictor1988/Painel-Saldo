@@ -77,7 +77,7 @@ const configuracaoResiduos = {
 
   'RSU - Lixo Comum': {
     id: 'RSU - Lixo Comum',
-    nome: 'RSU - Lixo Comum',
+    nome: 'RSU - Lixo',
     icone: 'fas fa-solid fa-trash',
     cor: 'text-blue-700',
     unidade: 'Ton',
