@@ -37,7 +37,7 @@ const configuracaoResiduos = {
   'TONELADA': {
     id: 'TONELADA',
     nome: 'Tonelada',
-    icone: 'fas fa-solid fa-weight-scale',
+    icone: 'fas fa-weight-scale',
     cor: 'text-gray-900',
     unidade: 'un',
     preco: 'Indisponível',
